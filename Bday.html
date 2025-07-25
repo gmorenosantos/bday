@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Feliz Aniversário, Lara!</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(120deg, #ffb6c1, #d8bfd8);
+      color: #4b0082;
+      text-align: center;
+    }
+    #iniciar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: white; /* totalmente opaco */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+    #iniciar-btn {
+      padding: 20px 40px;
+      font-size: 2em;
+      border: none;
+      border-radius: 10px;
+      background-color: #ff69b4;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    #iniciar-container.fade-out {
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .hidden {
+      display: none;
+    }
+    #conteudo.fade-in {
+      animation: fadeIn 1s ease forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    #conteudo {
+      width: 100vw;
+      height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .confete {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+    .jungkook-img {
+      width: 150px;
+      margin: 10px;
+    }
+    iframe {
+      margin-top: 10px;
+    }
+    .meme, .coracao {
+      width: 150px;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="iniciar-container">
+    <button id="iniciar-btn">🎉 Iniciar 🎉</button>
+  </div>
+
+  <div id="conteudo" class="hidden">
+    <canvas class="confete"></canvas>
+
+    <header>
+      <h1>🎈 Feliz Aniversário, Lara! 🎈</h1>
+      <h2>Que seu dia seja tão brilhante quanto os palcos do BTS! 🎶</h2>
+    </header>
+
+    <div>
+      <h3>💖 Um coração coreano só pra você:</h3>
+      
+     
+    </div>
+    <div>
+      <img class="jungkook-img" src="https://i.pinimg.com/736x/de/9c/a2/de9ca24f57f74ffa4ce19086a1217baa.jpg" alt="Jeon Jungkook" />
+      <img class="jungkook-img" src="https://i.pinimg.com/originals/56/96/df/5696dfeafff2dc2b397828a99ba6baa4.jpg" alt="Jungkook Coração" />
+    </div>
+
+    <h3>Especial para você: "IDOL" do BTS ✨</h3>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/pBuZEGYXA6E?si=rG5jKal-pti8smeY&amp;controls=0&amp;start=9" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+  
+
+  
+
+    <footer>
+      <h3><p>Com carinho, seu bestie Gabriel 🌟</p></h3>
+      <p>#LaraArmy #FelizAniversario</p>
+    </footer>
+  </div>
+
+  <script>
+    const btn = document.getElementById('iniciar-btn');
+    const conteudo = document.getElementById('conteudo');
+    const iniciarContainer = document.getElementById('iniciar-container');
+
+    btn.addEventListener('click', () => {
+      const iframe = conteudo.querySelector('iframe');
+      const src = iframe.getAttribute('src');
+      iframe.setAttribute('src', src.replace(/&?autoplay=1/, '') + (src.includes('?') ? '&' : '?') + 'autoplay=1');
+      iniciarContainer.classList.add('fade-out');
+      setTimeout(() => {
+        iniciarContainer.style.display = 'none';
+        conteudo.classList.remove('hidden');
+        conteudo.classList.add('fade-in');
+        drawParticles();
+      }, 1000);
+    });
+
+    const canvas = document.querySelector('.confete');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+    let particles = [];
+
+    function createParticle() {
+      return {
+        x: Math.random() * width,
+        y: Math.random() * height - height,
+        size: Math.random() * 8 + 2,
+        speedY: Math.random() * 3 + 1,
+        color: `hsl(${Math.random() * 360}, 100%, 70%)`
+      };
+    }
+
+    for (let i = 0; i < 200; i++) {
+      particles.push(createParticle());
+    }
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, width, height);
+      for (let p of particles) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+        p.y += p.speedY;
+        if (p.y > height) {
+          Object.assign(p, createParticle());
+          p.y = -10;
+          p.x = Math.random() * width;
+        }
+      }
+      requestAnimationFrame(drawParticles);
+    }
+  </script>
+</body>
+</html>
