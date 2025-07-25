@@ -17,18 +17,17 @@
       text-align: center;
     }
     #iniciar-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: white; /* totalmente opaco */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10000;
-}
-
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    }
     #iniciar-btn {
       padding: 20px 40px;
       font-size: 2em;
@@ -55,13 +54,13 @@
     }
     #conteudo {
       width: 100vw;
-      height: 100vh;
+      min-height: 100vh;
       padding: 20px;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       position: relative;
     }
     .confete {
@@ -76,12 +75,23 @@
       width: 150px;
       margin: 10px;
     }
-    iframe {
-      margin-top: 10px;
-    }
     .meme, .coracao {
       width: 150px;
       margin: 10px;
+    }
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      width: 100%;
+      max-width: 560px;
+    }
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
     }
   </style>
 </head>
@@ -100,8 +110,6 @@
 
     <div>
       <h3>💖 Um coração coreano só pra você:</h3>
-      
-     
     </div>
     <div>
       <img class="jungkook-img" src="https://i.pinimg.com/736x/de/9c/a2/de9ca24f57f74ffa4ce19086a1217baa.jpg" alt="Jeon Jungkook" />
@@ -109,11 +117,7 @@
     </div>
 
     <h3>Especial para você: "IDOL" do BTS ✨</h3>
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/pBuZEGYXA6E?si=rG5jKal-pti8smeY&amp;controls=0&amp;start=9" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-  
-
-  
+    <div id="video-container" class="video-wrapper"></div>
 
     <footer>
       <h3><p>Com carinho, seu bestie Gabriel 🌟</p></h3>
@@ -127,9 +131,15 @@
     const iniciarContainer = document.getElementById('iniciar-container');
 
     btn.addEventListener('click', () => {
-      const iframe = conteudo.querySelector('iframe');
-      const src = iframe.getAttribute('src');
-      iframe.setAttribute('src', src.replace(/&?autoplay=1/, '') + (src.includes('?') ? '&' : '?') + 'autoplay=1');
+      const container = document.getElementById('video-container');
+      container.innerHTML = '';
+      const iframe = document.createElement('iframe');
+      iframe.src = "https://www.youtube.com/embed/pBuZEGYXA6E?autoplay=1&start=9&controls=0";
+      iframe.allow = "autoplay; encrypted-media";
+      iframe.frameBorder = "0";
+      iframe.allowFullscreen = true;
+      container.appendChild(iframe);
+
       iniciarContainer.classList.add('fade-out');
       setTimeout(() => {
         iniciarContainer.style.display = 'none';
