@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Feliz Aniversário, Lara!</title>
+  <script src="https://www.youtube.com/iframe_api"></script>
+
   <style>
     :root{
       --bg1:#ffb6c1; --bg2:#d8bfd8; --brand:#ff69b4; --ink:#4b0082;
@@ -196,49 +198,68 @@ Muito amor, dinheiro e coreanos</h2>
   </div>
 
   <script>
-   const btn = document.getElementById('iniciar-btn');
+  const btn = document.getElementById('iniciar-btn');
   const conteudo = document.getElementById('conteudo');
   const iniciarContainer = document.getElementById('iniciar-container');
   let player;
 
-  function loadYT() {
-    if (window.YT && window.YT.Player) return Promise.resolve();
-    return new Promise(resolve => {
-      const tag = document.createElement('script');
-      tag.src = "https://www.youtube.com/iframe_api";
-      document.head.appendChild(tag);
-      window.onYouTubeIframeAPIReady = resolve;
-    });
+  // Garante que a API já foi carregada; se a página abriu muito rápido, aguarda um micro-loop
+  function ensureYTReady(cb){
+    if (window.YT && YT.Player) return cb();
+    const id = setInterval(() => {
+      if (window.YT && YT.Player){ clearInterval(id); cb(); }
+    }, 30);
   }
 
-  btn.addEventListener('click', async () => {
+  btn.addEventListener('click', () => {
+    // Mostra o conteúdo
     iniciarContainer.classList.add('fade-out');
     setTimeout(() => {
       iniciarContainer.style.display = 'none';
       conteudo.classList.remove('hidden');
       conteudo.classList.add('fade-in');
       startConfetti();
-    }, 800);
+    }, 300);
 
-    await loadYT();
-    player = new YT.Player('yt-mount', {
-      videoId: '7C2z4GqqS5E',        // IDOL
-      playerVars: {
-        autoplay: 1,
-        controls: 0,
-        rel: 0,
-        start: 18,
-        playsinline: 1,              // iOS toca inline
-        modestbranding: 1
-      },
-      events: {
-        onReady: e => {
-          e.target.unMute?.();
-          e.target.playVideo();
-          player.getIframe().style.opacity = '0';
-          player.getIframe().style.pointerEvents = 'none';
+    // Cria o player DENTRO do gesto do usuário, sem await/promise
+    ensureYTReady(() => {
+      player = new YT.Player('yt-mount', {
+        videoId: '7C2z4GqqS5E', // IDOL
+        playerVars: {
+          autoplay: 1,
+          controls: 0,
+          rel: 0,
+          start: 18,
+          playsinline: 1,
+          origin: location.origin
+        },
+        events: {
+          onReady: (e) => {
+            try {
+              // Habilita autoplay com som no iOS, pois estamos ainda no stack do clique
+              e.target.unMute?.();
+              e.target.playVideo();
+
+              // reforça permissões no iframe
+              const ifr = e.target.getIframe();
+              if (ifr) ifr.setAttribute('allow','autoplay; encrypted-media; fullscreen; picture-in-picture');
+            } catch (_) {}
+          }
         }
-      }
+      });
+
+      // Fallback duro: se em 800ms ainda não começou, faz mute->play->unmute
+      setTimeout(() => {
+        try {
+          const s = player?.getPlayerState?.();
+          // -1 (unstarted) ou 5 (cued)
+          if (s === -1 || s === 5 || typeof s === 'undefined') {
+            player.mute?.();
+            player.playVideo?.();
+            setTimeout(() => player.unMute?.(), 400);
+          }
+        } catch(_) {}
+      }, 800);
     });
   });
 
