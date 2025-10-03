@@ -129,11 +129,8 @@
     }
 
     /* Vídeo responsivo */
-    .video-wrapper{
-      position:relative; width:min(100%, 900px); aspect-ratio:16/9; border-radius:16px; overflow:hidden; box-shadow:var(--shadow);
-      background:#000;
-    }
-    .video-wrapper iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+    .video-wrapper{ position:relative; width:min(100%, 900px); aspect-ratio:16/9; border-radius:16px; overflow:hidden; box-shadow:var(--shadow); background:#000; }
+.video-wrapper iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; border-radius:16px; }
 
     footer p{margin:4px 0}
 
@@ -181,15 +178,16 @@ Muito amor, dinheiro e coreanos</h2>
         </div>
         <div class="card">
           <img src="https://i.pinimg.com/originals/56/96/df/5696dfeafff2dc2b397828a99ba6baa4.jpg" alt="Jungkook com coração"/>
-          <div class="muted">Coração coreano 💜</div>
         </div>
          
       </div>
     </section>
 
    
+<div class="video-wrapper">
+  <div id="yt-mount"></div>
+</div>
 
-    <div id="video-container" class="video-wrapper"></div>
 
     <footer style="text-align:center;margin:18px 0 40px">
       <h3><p>Com carinho, sua bestie Yas 🌟</p></h3>
@@ -198,29 +196,51 @@ Muito amor, dinheiro e coreanos</h2>
   </div>
 
   <script>
-    const btn = document.getElementById('iniciar-btn');
-    const conteudo = document.getElementById('conteudo');
-    const iniciarContainer = document.getElementById('iniciar-container');
+   const btn = document.getElementById('iniciar-btn');
+  const conteudo = document.getElementById('conteudo');
+  const iniciarContainer = document.getElementById('iniciar-container');
+  let player;
 
-    // Vídeo + entrada
-    btn.addEventListener('click', () => {
-      const container = document.getElementById('video-container');
-      container.innerHTML = '';
-      const iframe = document.createElement('iframe');
-      iframe.src = "https://www.youtube.com/embed/7C2z4GqqS5E?autoplay=1&start=18&controls=0&rel=0";
-      iframe.allow = "autoplay; encrypted-media";
-      iframe.setAttribute('allowfullscreen','');
-      container.appendChild(iframe);
-
-      iniciarContainer.classList.add('fade-out');
-      setTimeout(() => {
-        iniciarContainer.style.display = 'none';
-        conteudo.classList.remove('hidden');
-        conteudo.classList.add('fade-in');
-        startConfetti();
-        randomizeDance(); // deixa as miniaturas com tempos/atrasos diferentes
-      }, 800);
+  function loadYT() {
+    if (window.YT && window.YT.Player) return Promise.resolve();
+    return new Promise(resolve => {
+      const tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
+      window.onYouTubeIframeAPIReady = resolve;
     });
+  }
+
+  btn.addEventListener('click', async () => {
+    iniciarContainer.classList.add('fade-out');
+    setTimeout(() => {
+      iniciarContainer.style.display = 'none';
+      conteudo.classList.remove('hidden');
+      conteudo.classList.add('fade-in');
+      startConfetti();
+    }, 800);
+
+    await loadYT();
+    player = new YT.Player('yt-mount', {
+      videoId: '7C2z4GqqS5E',        // IDOL
+      playerVars: {
+        autoplay: 1,
+        controls: 0,
+        rel: 0,
+        start: 18,
+        playsinline: 1,              // iOS toca inline
+        modestbranding: 1
+      },
+      events: {
+        onReady: e => {
+          e.target.unMute?.();
+          e.target.playVideo();
+          player.getIframe().style.opacity = '0';
+          player.getIframe().style.pointerEvents = 'none';
+        }
+      }
+    });
+  });
 
     /* ===== Deixa cada card com “dança” diferente ===== */
     function randomizeDance(){
@@ -289,4 +309,3 @@ Muito amor, dinheiro e coreanos</h2>
   </script>
 </body>
 </html>
-
